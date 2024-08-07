@@ -106,7 +106,7 @@ This project involves an inverse design process for optimizing parameters of a j
    - ```viscosity``` - Viscosity
    - ```stiffness``` - Stiffness
    - ```dBar``` - ?
-   - ```scaleRendering``` - 2.0
+   - ```scaleRendering``` - ?
    - ```angleRight``` - Angle mismatch
    - ```gVector``` - Gravitational vector
    - ```Possion``` - Possion ratio
