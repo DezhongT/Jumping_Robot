@@ -1,14 +1,35 @@
-# Inverse Design of Snap-Actuated Jumping Robots Powered by Mechanics-Aided Machine Learning
+# Jumping Robot Inverse Design
 
-## Prerequisite
-  * Python: numpy, pyymal, torch, matplotlib, scikit-learn
+## Overview
+
+This project involves an inverse design process for optimizing parameters of a jumping robot to achieve specific target outputs. The script `inverse_design.py` uses a trained model to predict outcomes and optimize design parameters through simulations.
+
+## Prerequisites
+
+- Python 3.x
+- Required libraries (install via `requirements.txt`)
+- C++ dependencies
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/DezhongT/Jumping_Robot.git
+   cd Jumping_Robot
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+
+## Usage
+
+
 
 There are some dependencies required prior to compilation.
 Instructions for macOS and Ubuntu are similar (presented below).
 For other operating systems you should be able to modify the commands below appropriately.
 
-- **macOS**: Because this uses the MKL, it's not certain to run on Apple silicone.
-- **macOS**: If you're running a mac, it's highly recommended you use a package manager like [MacPorts](https://www.macports.org/install.php) or [homebrew](https://brew.sh/). Instructions below are for MacPorts.
+
 - **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
 
 - X11
