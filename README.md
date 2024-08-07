@@ -102,29 +102,18 @@ This project involves an inverse design process for optimizing parameters of a j
    - ```density``` - Material density.
    - ```stol``` - A small number used in solving the linear system.
    - ```tol``` - Force tolerance.
-   - 
-   - ```helixradius``` - Radius of the helix.
-   - ```helixpitch``` - Pitch of the helix.
-   - ```density``` - Mass per unit volume.
-   
-   - ```Poisson``` - Poisson ratio.
-   - ```tol``` and ```stol``` - Small numbers used in solving the linear system. Fraction of a percent, e.g. 1.0e-3, is often a good choice.
-   - ```maxIter``` - Maximum number of iterations allowed before the solver quits. 
-   - ```gVector``` - 3x1 vector specifying acceleration due to gravity.
-   - ```viscosity``` - Viscosity for applying damping forces.
-   
-   
-   - ```recordNodes (0 or 1)``` - Flag indicating whether nodal positions will be recorded.
-   - ```dataResolution``` - Rate of data recording in seconds. Applies to both ```saveData``` and ```recordNodes```.
-   - ```waitTime``` - Initial wait period duration.
-   - ```pullTime``` - Duration to pull for (*starts after ```waitTime``` is done*).
-   - ```releaseTime``` - Duration to loosen for (*starts after ```waitTime``` + ```pullTime``` is done*).
-   - ```pullSpeed``` - Speed at which to pull and/or loosen each end.
-   
-   - ```colLimit``` - Distance limit for inclusion in contact candidate set (*colLimit must be > delta*).
-   - ```delta``` - Distance tolerance for contact.
-   - ```kScaler``` - Constant scaling factor for contact stiffness.
-   - ```mu``` - Friction coefficient. A value of zero turns friction off.
-   - ```nu``` - Slipping tolerance for friction.
-   - ```lineSearch (0 or 1)``` - Flag indicating whether line search will be used.
-   - ```knotConfig``` - File name for the initial knot configuration. Should be a txt file located in ```knot_configurations``` directory. Note that overhand knot configurations for ```n1, n2, n3, n4``` are provided with a discretization of 301 nodes.
+   - ```maxIter``` - Maximum iteration
+   - ```viscosity``` - Viscosity
+   - ```stiffness``` - Stiffness
+   - ```dBar``` - ?
+   - ```scaleRendering``` - 2.0
+   - ```angleRight``` - Angle mismatch
+   - ```gVector``` - Gravitational vector
+   - ```Possion``` - Possion ratio
+   - ```totalMass``` - Total mass
+   - ```mu``` - Frictional coefficient
+   - ```epsilonV``` - ?
+   - ```l1``` - Robot length
+   - ```l2``` - Robot height
+   - ```compressRatio``` - Pre-compression ratio
+   - ```h1``` - Height at the critical configuration before the snap
