@@ -1,3 +1,4 @@
+essentials
 numpy
 pyymal 
 torch 
