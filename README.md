@@ -6,8 +6,9 @@ This project involves an inverse design process for optimizing parameters of a j
 
 ## Prerequisites
 
+- Ubuntu 18.04 or above
 - Python 3.x
-- Required libraries (install via `requirements.txt`)
+- Python libraries (install via `requirements.txt`)
 - C++ dependencies
 
 ## Installation
@@ -21,7 +22,7 @@ This project involves an inverse design process for optimizing parameters of a j
    ```bash
    pip install -r requirements.txt
 
-3. Install c++ dependencies
+3. Install C++ dependencies
 
    - **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
 
