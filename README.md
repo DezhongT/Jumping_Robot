@@ -117,3 +117,21 @@ This project involves an inverse design process for optimizing parameters of a j
    - ```l2``` - Robot height
    - ```compressRatio``` - Pre-compression ratio
    - ```h1``` - Height at the critical configuration before the snap
+     
+3. Train the neural network model with the jumping robot dataset
+   ```bash
+   python3 main.py
+   ```
+
+4. Use the pre-trained model to determine the robot parameters to achieve the desired jump
+   ```bash
+   python3 inverse_design.py test_num:=100 plot:=True
+   ```
+
+### Citation
+If our work has helped your research, please cite the following paper.
+```
+@article{
+}
+
+```
