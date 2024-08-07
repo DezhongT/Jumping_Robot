@@ -102,21 +102,21 @@ This project involves an inverse design process for optimizing parameters of a j
    - ```density``` - Material density.
    - ```stol``` - A small number used in solving the linear system.
    - ```tol``` - Force tolerance.
-   - ```maxIter``` - Maximum iteration
-   - ```viscosity``` - Viscosity
-   - ```stiffness``` - Stiffness
+   - ```maxIter``` - Maximum iteration.
+   - ```viscosity``` - Viscosity.
+   - ```stiffness``` - Stiffness.
    - ```dBar``` - ?
    - ```scaleRendering``` - ?
-   - ```angleRight``` - Angle mismatch
-   - ```gVector``` - Gravitational vector
-   - ```Possion``` - Possion ratio
-   - ```totalMass``` - Total mass
-   - ```mu``` - Frictional coefficient
+   - ```angleRight``` - Angle mismatch.
+   - ```gVector``` - Gravitational vector.
+   - ```Possion``` - Possion ratio.
+   - ```totalMass``` - Total mass.
+   - ```mu``` - Frictional coefficient.
    - ```epsilonV``` - ?
-   - ```l1``` - Robot length
-   - ```l2``` - Robot height
-   - ```compressRatio``` - Pre-compression ratio
-   - ```h1``` - Height at the critical configuration before the snap
+   - ```l1``` - Robot length.
+   - ```l2``` - Robot height.
+   - ```compressRatio``` - Pre-compression ratio.
+   - ```h1``` - Height at the critical configuration before the snap.
      
 3. Train the neural network model with the jumping robot dataset
    ```bash
@@ -127,6 +127,9 @@ This project involves an inverse design process for optimizing parameters of a j
    ```bash
    python3 inverse_design.py test_num:=100 plot:=True
    ```
+   `Arguments`
+   - ```test_num```: NUmber of tests to run (e.g., `10`).
+   - ```plot```: Flag to plot results (`True` or `False`).
 
 ### Citation
 If our work has helped your research, please cite the following paper.
