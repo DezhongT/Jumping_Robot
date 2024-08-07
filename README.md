@@ -17,11 +17,13 @@ This project involves an inverse design process for optimizing parameters of a j
    ```bash
    git clone https://github.com/DezhongT/Jumping_Robot.git
    cd Jumping_Robot
+   ```
 
 2. Install python libraries:
    ```bash
    pip install -r requirements.txt
-
+   ```
+   
 3. Install C++ dependencies
 
    - **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
@@ -76,5 +78,52 @@ This project involves an inverse design process for optimizing parameters of a j
 
 ## Usage
 
-1. 
+1. Configure the simulation engine
+   ```bash
+   cd simulations
+   mkdir build && cd build
+   cmake ..
+   make -j4
+   cd ../..
+   ```
 
+2. (Optional) To simulate the jumping robot with customized setting parameters, simply run
+   ```bash
+   ./simulations/simDER ./simulations/option.txt
+   ```
+### Setting Parameters
+
+All simulation parameters are set through a parameter file ```option.txt```. A template file ```template_option.txt``` is provided that can be used to construct ```option.txt```.
+
+```bash
+cp template_option.txt option.txt   # create option.txt
+```
+Specifiable parameters are as follows (we use SI units):
+- ```RodLength``` - Contour length of the rod.
+- ```numVertices``` - Number of nodes on the rod.
+- ```rodRadius``` - Cross-sectional radius of the rod.
+- ```helixradius``` - Radius of the helix.
+- ```helixpitch``` - Pitch of the helix.
+- ```density``` - Mass per unit volume.
+- ```youngM``` - Young's modulus.
+- ```Poisson``` - Poisson ratio.
+- ```tol``` and ```stol``` - Small numbers used in solving the linear system. Fraction of a percent, e.g. 1.0e-3, is often a good choice.
+- ```maxIter``` - Maximum number of iterations allowed before the solver quits. 
+- ```gVector``` - 3x1 vector specifying acceleration due to gravity.
+- ```viscosity``` - Viscosity for applying damping forces.
+- ```render (0 or 1) ```- Flag indicating whether OpenGL visualization should be rendered.
+- ```saveData (0 or 1)``` - Flag indicating whether pull forces and rod end positions should be reocrded.
+- ```recordNodes (0 or 1)``` - Flag indicating whether nodal positions will be recorded.
+- ```dataResolution``` - Rate of data recording in seconds. Applies to both ```saveData``` and ```recordNodes```.
+- ```waitTime``` - Initial wait period duration.
+- ```pullTime``` - Duration to pull for (*starts after ```waitTime``` is done*).
+- ```releaseTime``` - Duration to loosen for (*starts after ```waitTime``` + ```pullTime``` is done*).
+- ```pullSpeed``` - Speed at which to pull and/or loosen each end.
+- ```deltaTime``` - Time step size.
+- ```colLimit``` - Distance limit for inclusion in contact candidate set (*colLimit must be > delta*).
+- ```delta``` - Distance tolerance for contact.
+- ```kScaler``` - Constant scaling factor for contact stiffness.
+- ```mu``` - Friction coefficient. A value of zero turns friction off.
+- ```nu``` - Slipping tolerance for friction.
+- ```lineSearch (0 or 1)``` - Flag indicating whether line search will be used.
+- ```knotConfig``` - File name for the initial knot configuration. Should be a txt file located in ```knot_configurations``` directory. Note that overhand knot configurations for ```n1, n2, n3, n4``` are provided with a discretization of 301 nodes.
