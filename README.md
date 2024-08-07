@@ -17,20 +17,13 @@ This project involves an inverse design process for optimizing parameters of a j
    git clone https://github.com/DezhongT/Jumping_Robot.git
    cd Jumping_Robot
 
-2. Install dependencies:
+2. Install python libraries:
    ```bash
    pip install -r requirements.txt
 
-## Usage
+3. Install c++ dependencies
 
-
-
-There are some dependencies required prior to compilation.
-Instructions for macOS and Ubuntu are similar (presented below).
-For other operating systems you should be able to modify the commands below appropriately.
-
-
-- **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
+   - **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
 
 - X11
   - An X11 (xorg) server is necessary to use the `freeglut` library. This exists already on Linux.
@@ -38,29 +31,10 @@ For other operating systems you should be able to modify the commands below appr
 - [Eigen 3.4.0](http://eigen.tuxfamily.org/index.php?title=Main_Page)
   - Eigen is used for various linear algebra operations.
   - **macOS**: You can install this version with MacPorts: `sudo port install eigen3`. Otherwise, build instructions are below.
-  - DisMech is built with Eigen version 3.4.0 which can be downloaded [here](https://gitlab.com/libeigen/eigen/-/releases/3.4.0). After downloading the source code, install through cmake as follows.
+  - The project is built with Eigen version 3.4.0 which can be downloaded [here](https://gitlab.com/libeigen/eigen/-/releases/3.4.0). After downloading the source code, install through cmake as follows.
     ```bash
     cd eigen-3.4.0 && mkdir build && cd build
     cmake ..
-    sudo make install
-    ```
-    
-- [Flexible Collision Library (FCL)](https://github.com/flexible-collision-library/fcl)
-  - The FCL library is used to perform both broadphase and narrowphase collision detection with each discrete rod represented as a chain of cylinders.
-  - FCL depends on both Eigen (instructions above) and [libccd](https://github.com/danfis/libccd). Install [libccd](https://github.com/danfis/libccd) with the following commands, making sure to build shared libraries:
-     ```bash
-    git clone https://github.com/danfis/libccd
-    cd libccd
-    cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON ..
-    make -j4
-    sudo make install
-     ```
-  - Next, install FCL from source using the following commands:
-    ```bash
-    git clone https://github.com/flexible-collision-library/fcl
-    cd fcl && mkdir build && cd build
-    cmake ..
-    make -j4
     sudo make install
     ```
 - [SymEngine](https://github.com/symengine/symengine)
@@ -77,7 +51,7 @@ For other operating systems you should be able to modify the commands below appr
     make -j4
     sudo make install
     ```
-  - **macOS**: You'll need to provide the LLVM root to the build with `-D CMAKE_PREFIX_PATH=/opt/local/libexec/llvm-15` (if installed via MacPorts).
+
 - [Intel oneAPI Math Kernel Library (oneMKL)](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-download.html?operatingsystem=linux&distributions=webdownload&options=online)
   - Necessary for access to Pardiso, which is used as a sparse matrix solver.
   - Intel MKL is also used as the BLAS / LAPACK backend for Eigen.
@@ -105,3 +79,9 @@ For other operating systems you should be able to modify the commands below appr
     - **macOS**: `sudo port install freeglut pkgconfig` (Note: `pkgconfig` is necessary to avoid finding system GLUT instead of `freeglut`.)
 
 - Lapack (*included in MKL*)
+
+
+## Usage
+
+1. 
+
