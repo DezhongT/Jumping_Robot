@@ -128,7 +128,7 @@ This project involves an inverse design process for optimizing parameters of a j
    python3 inverse_design.py test_num:=100 plot:=True
    ```
    `Arguments`
-   - ```test_num```: NUmber of tests to run (e.g., `10`).
+   - ```test_num```: Number of tests to run (e.g., `10`).
    - ```plot```: Flag to plot results (`True` or `False`).
 
 ### Citation
