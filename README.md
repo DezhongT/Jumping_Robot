@@ -1,4 +1,7 @@
-### Dependencies
+# Inverse Design of Snap-Actuated Jumping Robots Powered by Mechanics-Aided Machine Learning
+
+## Prerequisite
+  * Python: numpy, pyymal, torch, matplotlib, scikit-learn
 
 There are some dependencies required prior to compilation.
 Instructions for macOS and Ubuntu are similar (presented below).
