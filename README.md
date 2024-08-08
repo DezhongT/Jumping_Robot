@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project involves an inverse design process for optimizing parameters of a jumping robot to achieve specific target outputs. The script `inverse_design.py` uses a trained model to predict outcomes and optimize design parameters through simulations.
+This project involves an inverse design process for optimizing parameters of a jumping robot to achieve specific target trajectories. The script `inverse_design.py` uses a trained model to predict trajectory and optimize design parameters through simulations.
 
 ## Prerequisites
 
