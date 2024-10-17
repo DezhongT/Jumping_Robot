@@ -5,6 +5,8 @@ import subprocess
 
 import argparse
 import time
+import os
+import tracemalloc
 
 def parse_custom_arguments():
     parser = argparse.ArgumentParser(description="Process custom key-value arguments.")

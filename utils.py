@@ -16,11 +16,12 @@ from mpl_toolkits.mplot3d import Axes3D
 from os import path as osp
 from sklearn.neighbors import KernelDensity
 
+
 def loadModel(yaml_path = "model.yaml", checkpoint_path = "./output/checkpoints/inverse_model.pt"):
     with open(yaml_path, 'r') as file:
         args = yaml.safe_load(file)
     model = configer.build_model(args)
-    checkpoint = torch.load(checkpoint_path)
+    checkpoint = torch.load(checkpoint_path, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
 
     return model
@@ -238,3 +239,20 @@ def inverseOptimize(inputs, model, target_p, max_iter = 1000, verbose = False):
     compressL = variable_inputs[1] * std_compressL + mean_compressL
 
     return alpha, compressL, mu, rho
+
+def data_driven(test_samples):
+    x, y, mu, rho, alpha, compressL = loadData()
+    alpha_f, alpha_c = getRange(alpha)
+    compressL_f, compressL_c = getRange(compressL)
+    rho_f, rho_c = getRange(rho)
+    mu_f, mu_c = getRange(mu)
+
+    # load the data-driven model
+    yaml_path = "model.yaml"
+    checkpoint_path = "./output/checkpoints/forward_model.pt"
+    model = loadModel(yaml_path=yaml_path, checkpoint_path=checkpoint_path)
+
+    for sample in test_samples:
+        print(sample)
+        x, y, mu, rho = sample
+    exit(0)
