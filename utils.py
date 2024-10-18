@@ -15,7 +15,15 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from os import path as osp
 from sklearn.neighbors import KernelDensity
+import tracemalloc
+import time
+import subprocess
 
+# bayesian opt package
+from argparse import Namespace
+from dragonfly import load_config
+from dragonfly.exd.experiment_caller import CPFunctionCaller
+from dragonfly.opt import gp_bandit
 
 def loadModel(yaml_path = "model.yaml", checkpoint_path = "./output/checkpoints/inverse_model.pt"):
     with open(yaml_path, 'r') as file:
@@ -228,8 +236,8 @@ def inverseOptimize(inputs, model, target_p, max_iter = 1000, verbose = False):
         optimizer.step()
         if verbose and (i + 1) % 100 == 0:
             print(f"Iter {i+1}: Loss is {loss}")
-
-    print(f"Inverse design optimization loss is {loss}")
+    if verbose:
+        print(f"Inverse design optimization loss is {loss}")
     constant_inputs = constant_inputs.detach().cpu().numpy()
     variable_inputs = variable_inputs.detach().cpu().numpy()
 
@@ -247,12 +255,189 @@ def data_driven(test_samples):
     rho_f, rho_c = getRange(rho)
     mu_f, mu_c = getRange(mu)
 
+    tracemalloc.start()
+    start_time = time.time()
+
     # load the data-driven model
     yaml_path = "model.yaml"
     checkpoint_path = "./output/checkpoints/forward_model.pt"
     model = loadModel(yaml_path=yaml_path, checkpoint_path=checkpoint_path)
 
+    cache = []
     for sample in test_samples:
-        print(sample)
-        x, y, mu, rho = sample
-    exit(0)
+        mu_t, rho_t, x_t, y_t = sample
+        # check the available region
+        alpha = np.linspace(alpha_f, alpha_c, 10)
+        compressL = np.linspace(compressL_f, compressL_c, 10)
+
+        alpha, compressL= np.meshgrid(alpha, compressL, indexing='ij')
+        alpha_input = alpha.flatten()
+        compressL_input = compressL.flatten()
+        mu_input = np.ones_like(alpha_input) * mu_t
+        rho_input = np.ones_like(alpha_input) * rho_t
+
+        features = np.vstack([alpha_input, compressL_input, mu_input, rho_input]).T
+        outputs = pred(model, features)
+        target_p = np.asarray([x_t, y_t]).reshape(-1, 2)
+        flag = checkTarget(outputs, target_p, plot_flag=False)
+        if not flag:
+            continue
+
+        # select initial guess
+        offset = outputs - target_p
+        offset = np.sqrt((offset**2).sum(axis = 1))
+
+        min_index = np.argmin(offset)
+        alpha_int = alpha_input[min_index]
+        compressL_int = compressL_input[min_index]
+
+        inputs = [alpha_int, compressL_int, mu_t, rho_t]
+        alpha_r, compressL_r, mu_r, rho_r = inverseOptimize(inputs, model, target_p.copy())
+        cache.append([alpha_r, compressL_r, mu_r, rho_r, target_p])
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_memory = peak/(1024 ** 2)
+    elapsed_time = time.time() - start_time
+
+    # evaluate the accuracy
+    accuracy = 0
+    for data in cache:
+        alpha_r, compressL_r, mu_r, rho_r, target_p = data
+        cmd = './simulations/simDER ./simulations/option.txt'
+        suffix = f" -- mu {mu_r} -- totalMass {rho_r} -- angleRight {alpha_r} -- compressRatio {compressL_r}"
+        cmd = cmd + suffix
+        BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        BASimProcess.communicate()
+        fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_r:.6f}_angleRight_{alpha_r:.6f}_mu_{mu_r:.6f}_mass_{rho_r:.6f}.txt"
+        data1 = np.loadtxt(fileName)
+        idx = np.argmax(data1[:, 2])
+        node= data1[idx]
+        y = np.linalg.norm(target_p - node[1:])
+        accuracy += y
+        print(y)
+
+    results = {"accuracy": accuracy/len(test_samples), "memory_usage": peak_memory, "time_cost": elapsed_time/len(test_samples)}
+
+    return results
+
+def bayesian_opt(test_samples):
+    x, y, mu, rho, alpha, compressL = loadData()
+    alpha_f, alpha_c = getRange(alpha)
+    compressL_f, compressL_c = getRange(compressL)
+
+    tracemalloc.start()
+    start_time = time.time()
+    num_init = 6
+    batch_size = 5
+
+    options = Namespace(
+        build_new_model_every = batch_size,
+        init_captial = num_init-1,
+        gpb_hp_tune_criterion = "ml-post_sampling",
+    )
+
+    domain_vars = [{'type': 'float',  'min': alpha_f, 'max': alpha_c, 'dim': 1}, # alpha
+                   {'type': 'float',  'min': compressL_f, 'max': compressL_c, 'dim': 1}, # compressL
+                   ]
+    config_params = {"domain": domain_vars}
+    config = load_config(config_params)
+    func_caller = CPFunctionCaller(None, config.domain, domain_orderings=config.domain_orderings)
+    opt = gp_bandit.CPGPBandit(func_caller, 'default', ask_tell_mode=True, options=options)  # opt is the optimizer object
+
+    print("Executing bayesian optimization...")
+    cache_result = []
+    accuracy = 0
+    for sample in test_samples:
+        mu_t, rho_t, x_t, y_t = sample
+        target_p = np.asarray([x_t, y_t]).reshape(-1, 2)
+
+        cache = {}
+        opt.initialise()
+        initial_samples = opt.ask(num_init)
+        for sample in initial_samples:
+            alpha_t = sample[0][0]
+            compressL_t = sample[1][0]
+            # check if the file exist
+            if (alpha_t, compressL_t) in cache:
+                opt.tell([(sample, -cache[(alpha_t, compressL_t)])])
+            else:
+                cmd = './simulations/simDER ./simulations/option.txt'
+                suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_t} -- compressRatio {compressL_t}"
+                cmd = cmd + suffix
+                BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                BASimProcess.communicate()
+                fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_t:.6f}_angleRight_{alpha_t:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
+                data1 = np.loadtxt(fileName)
+                idx = np.argmax(data1[:, 2])
+                node= data1[idx]
+                y = np.linalg.norm(target_p - node[1:])
+                opt.tell([(sample, -y)])
+                cache[(alpha_t, compressL_t)] = y
+                os.remove(fileName)
+        # update model
+        opt._build_new_model()
+        opt._set_next_gp()
+        print("finished warm up")
+
+        epochs = 0
+        min_err = 1
+        alpha_r = None
+        compressL_r = None
+        predicted = None
+        while epochs < 20:
+            # sampling
+            batch_samples = []
+            for i in range(batch_size):
+                batch_samples.append(opt.ask())
+
+            average_err = 0
+            for sample in batch_samples:
+                alpha_t = sample[0][0]
+                compressL_t = sample[1][0]
+                # check if the file exist
+                if (alpha_t, compressL_t) in cache:
+                    opt.tell([(sample, -cache[(alpha_t, compressL_t)])])
+                else:
+                    cmd = './simulations/simDER ./simulations/option.txt'
+                    suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_t} -- compressRatio {compressL_t}"
+                    cmd = cmd + suffix
+                    BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    BASimProcess.communicate()
+                    fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_t:.6f}_angleRight_{alpha_t:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
+                    data1 = np.loadtxt(fileName)
+                    idx = np.argmax(data1[:, 2])
+                    node= data1[idx]
+                    y = np.linalg.norm(target_p - node[1:])
+                    opt.tell([(sample, -y)])
+                    cache[(alpha_t, compressL_t)] = y
+                    os.remove(fileName)
+                average_err += cache[(alpha_t, compressL_t)]
+                if min_err > cache[(alpha_t, compressL_t)]:
+                    min_err = cache[(alpha_t, compressL_t)]
+                    alpha_r = alpha_t
+                    compressL_r = compressL_t
+                    predicted = node.copy()
+
+            average_err = average_err/batch_size
+
+            if min_err < 3e-3 or average_err < 6e-3:
+                break
+            print(f"epoch {epochs}, error: {average_err/batch_size}")
+            opt._build_new_model()
+            opt._set_next_gp()
+            epochs += 1
+            
+        cache_result.append([alpha_r, compressL_r, target_p, predicted])
+        accuracy += min_err
+         
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_memory = peak/(1024 ** 2)
+    elapsed_time = time.time() - start_time
+    
+    results = {"accuracy": accuracy/len(test_samples), "memory_usage": peak_memory, "time_cost": elapsed_time/len(test_samples)}
+    print(results)
+
+    print(cache_result)
+    return results
+

@@ -6,6 +6,8 @@ import tracemalloc
 import argparse
 import sys
 import utils
+import matplotlib.pyplot as plt
+
 
 def parse_custom_arguments():
     parser = argparse.ArgumentParser(description="Process custom key-value arguments.")
@@ -24,7 +26,7 @@ class TestOptimizationFunction(absltest.TestCase):
             results = utils.data_driven(testcases)
 
         if TEST_TYPE == "bayesian-opt":
-            results = utils.bayestian_opt(testcases)
+            results = utils.bayesian_opt(testcases)
 
         if TEST_TYPE == "gradient-descent":
             results = utils.gradient_descent(testcases)
@@ -32,7 +34,12 @@ class TestOptimizationFunction(absltest.TestCase):
         print(results)
 
 def load_testcases():
-    data = np.loadtxt("test_cases.txt").tolist()
+    data = np.loadtxt("savedData.txt")
+    x = np.linspace(0.14, 0.5, 10)
+    y = np.linspace(0.3, 0.6, 10)
+
+    data = [[0.57, 1e-3, x[i], y[i]] for i in range(len(x))]
+
     return data
 
 
