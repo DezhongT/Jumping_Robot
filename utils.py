@@ -25,6 +25,7 @@ from dragonfly import load_config
 from dragonfly.exd.experiment_caller import CPFunctionCaller
 from dragonfly.opt import gp_bandit
 
+
 def loadModel(yaml_path = "model.yaml", checkpoint_path = "./output/checkpoints/inverse_model.pt"):
     with open(yaml_path, 'r') as file:
         args = yaml.safe_load(file)
@@ -328,7 +329,7 @@ def bayesian_opt(test_samples):
     tracemalloc.start()
     start_time = time.time()
     num_init = 6
-    batch_size = 5
+    batch_size = 10
 
     options = Namespace(
         build_new_model_every = batch_size,
@@ -367,12 +368,13 @@ def bayesian_opt(test_samples):
                 BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 BASimProcess.communicate()
                 fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_t:.6f}_angleRight_{alpha_t:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
-                data1 = np.loadtxt(fileName)
-                idx = np.argmax(data1[:, 2])
-                node= data1[idx]
-                y = np.linalg.norm(target_p - node[1:])
-                opt.tell([(sample, -y)])
-                cache[(alpha_t, compressL_t)] = y
+                if os.path.getsize(fileName) > 0:
+                    data1 = np.loadtxt(fileName)
+                    idx = np.argmax(data1[:, 2])
+                    node= data1[idx]
+                    y = np.linalg.norm(target_p - node[1:])
+                    opt.tell([(sample, -y)])
+                    cache[(alpha_t, compressL_t)] = y
                 os.remove(fileName)
         # update model
         opt._build_new_model()
@@ -384,52 +386,55 @@ def bayesian_opt(test_samples):
         alpha_r = None
         compressL_r = None
         predicted = None
-        while epochs < 20:
+        while epochs < 10:
             # sampling
             batch_samples = []
             for i in range(batch_size):
                 batch_samples.append(opt.ask())
 
             average_err = 0
+            sample_num = 0
             for sample in batch_samples:
                 alpha_t = sample[0][0]
                 compressL_t = sample[1][0]
                 # check if the file exist
-                if (alpha_t, compressL_t) in cache:
-                    opt.tell([(sample, -cache[(alpha_t, compressL_t)])])
-                else:
+                if (alpha_t, compressL_t) not in cache:
                     cmd = './simulations/simDER ./simulations/option.txt'
                     suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_t} -- compressRatio {compressL_t}"
                     cmd = cmd + suffix
                     BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     BASimProcess.communicate()
                     fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_t:.6f}_angleRight_{alpha_t:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
-                    data1 = np.loadtxt(fileName)
-                    idx = np.argmax(data1[:, 2])
-                    node= data1[idx]
-                    y = np.linalg.norm(target_p - node[1:])
-                    opt.tell([(sample, -y)])
-                    cache[(alpha_t, compressL_t)] = y
+                    if os.path.getsize(fileName) > 0:
+                        data1 = np.loadtxt(fileName)
+                        idx = np.argmax(data1[:, 2])
+                        node= data1[idx]
+                        y = np.linalg.norm(target_p - node[1:])
+                        opt.tell([(sample, -y)])
+                        cache[(alpha_t, compressL_t)] = y
+                        average_err += cache[(alpha_t, compressL_t)]
+                        sample_num += 1
+                        if min_err > cache[(alpha_t, compressL_t)]:
+                            min_err = cache[(alpha_t, compressL_t)]
+                            alpha_r = alpha_t
+                            compressL_r = compressL_t
+                            predicted = node.copy()
+
                     os.remove(fileName)
-                average_err += cache[(alpha_t, compressL_t)]
-                if min_err > cache[(alpha_t, compressL_t)]:
-                    min_err = cache[(alpha_t, compressL_t)]
-                    alpha_r = alpha_t
-                    compressL_r = compressL_t
-                    predicted = node.copy()
 
-            average_err = average_err/batch_size
-
-            if min_err < 3e-3 or average_err < 6e-3:
-                break
-            print(f"epoch {epochs}, error: {average_err/batch_size}")
-            opt._build_new_model()
-            opt._set_next_gp()
+            if sample_num > 0:
+                average_err = average_err/sample_num
+                if min_err < 3e-3 or average_err < 6e-3:
+                    break
+                print(f"epoch {epochs}, error: {average_err}, min_error : {min_err}")
+                opt._build_new_model()
+                opt._set_next_gp()
             epochs += 1
-            
+
+        print("finished evalute")
         cache_result.append([alpha_r, compressL_r, target_p, predicted])
         accuracy += min_err
-         
+
     current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
     peak_memory = peak/(1024 ** 2)
