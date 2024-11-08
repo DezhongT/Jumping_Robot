@@ -1,3 +1,6 @@
 datafiles/
 simulations/build/
 __pycache__/
+miscellaneous/
+results/
+venv/
