@@ -124,7 +124,7 @@ This project involves an inverse design process for optimizing parameters of a j
      
 3. Train the neural network model with the jumping robot dataset
    ```bash
-   python3 main.py
+   python3 train_model.py
    ```
 
 4. Use the pre-trained model to determine the robot parameters to achieve the desired jump

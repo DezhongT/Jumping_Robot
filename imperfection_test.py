@@ -193,6 +193,5 @@ if __name__=="__main__":
     testcases = [0.1, 0.2, 0.3, 0.768] # delta_alpha, epsilon, mu, bar_mass
 
     absltest.main()
-    print("tdz")
     print(base_node)
     print(results)
