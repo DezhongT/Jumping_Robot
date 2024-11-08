@@ -314,9 +314,7 @@ def data_driven(test_samples):
         idx = np.argmax(data1[:, 2])
         node= data1[idx]
         y = np.linalg.norm(target_p - node[1:])
-        accuracy += y
-        print(y)
-
+        accuracy +=  y
     results = {"accuracy": accuracy/len(test_samples), "memory_usage": peak_memory, "time_cost": elapsed_time/len(test_samples)}
 
     return results
@@ -342,8 +340,6 @@ def bayesian_opt(test_samples):
                    ]
     config_params = {"domain": domain_vars}
     config = load_config(config_params)
-    func_caller = CPFunctionCaller(None, config.domain, domain_orderings=config.domain_orderings)
-    opt = gp_bandit.CPGPBandit(func_caller, 'default', ask_tell_mode=True, options=options)  # opt is the optimizer object
 
     print("Executing bayesian optimization...")
     cache_result = []
@@ -353,6 +349,9 @@ def bayesian_opt(test_samples):
         target_p = np.asarray([x_t, y_t]).reshape(-1, 2)
 
         cache = {}
+
+        func_caller = CPFunctionCaller(None, config.domain, domain_orderings=config.domain_orderings)
+        opt = gp_bandit.CPGPBandit(func_caller, 'default', ask_tell_mode=True, options=options)  # opt is the optimizer object
         opt.initialise()
         initial_samples = opt.ask(num_init)
         for sample in initial_samples:
@@ -367,6 +366,7 @@ def bayesian_opt(test_samples):
                 cmd = cmd + suffix
                 BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 BASimProcess.communicate()
+                print(cmd)
                 fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_t:.6f}_angleRight_{alpha_t:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
                 if os.path.getsize(fileName) > 0:
                     data1 = np.loadtxt(fileName)
@@ -426,7 +426,7 @@ def bayesian_opt(test_samples):
                 average_err = average_err/sample_num
                 if min_err < 3e-3 or average_err < 6e-3:
                     break
-                print(f"epoch {epochs}, error: {average_err}, min_error : {min_err}")
+                print(f"epoch {epochs}, error: {average_err}, min_error : {min_err}, ({alpha_r} {compressL_r})")
                 opt._build_new_model()
                 opt._set_next_gp()
             epochs += 1
@@ -446,3 +446,114 @@ def bayesian_opt(test_samples):
     print(cache_result)
     return results
 
+
+def gradient_descent(test_samples):
+    tracemalloc.start()
+    start_time = time.time()
+
+    x, y, mu, rho, alpha, compressL = loadData()
+    points = np.hstack((x.reshape(-1, 1), y.reshape(-1, 1), 100 * rho.reshape(-1, 1), mu.reshape(-1, 1)))
+    accuracy = 0
+    cache_result = []
+    for sample in test_samples:
+        mu_t, rho_t, x_t, y_t = sample
+
+        target_p = np.asarray([x_t, y_t]).reshape(-1, 2)
+
+        diff_p = points - np.asarray([x_t, y_t, 100 * rho_t, mu_t]).reshape(-1, 4)
+        diff_p = np.sum(diff_p**2, 1)
+        idx = np.argmin(diff_p)
+        # initial guess
+        alpha_g = alpha[idx]
+        compressL_g = compressL[idx]
+        print(idx, mu.shape, rho.shape, x.shape, y.shape)
+        print(alpha_g, compressL_g, mu_t, rho_t, mu[idx], rho[idx], x[idx], y[idx], x_t, y_t)
+        # exit(0)
+
+        cmd = './simulations/simDER ./simulations/option.txt'
+        suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_g} -- compressRatio {compressL_g}"
+        cmd = cmd + suffix
+        BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        BASimProcess.communicate()
+        fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_g:.6f}_angleRight_{alpha_g:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
+        data1 = np.loadtxt(fileName)
+        idx = np.argmax(data1[:, 2])
+        node= data1[idx]
+        y_g = np.linalg.norm(target_p - node[1:])
+        os.remove(fileName)
+        print(y_g)
+
+        iter = 0
+        perturb = 1e-4
+
+        while y_g > 1e-3 and iter < 100:
+            # compute the numerical jacobian
+            jacobian = np.zeros((2, ))
+            suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_g + perturb} -- compressRatio {compressL_g}"
+            cmd = cmd + suffix
+            BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            BASimProcess.communicate()
+            fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_g:.6f}_angleRight_{alpha_g + perturb:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
+            data1 = np.loadtxt(fileName)
+            idx = np.argmax(data1[:, 2])
+            node= data1[idx]
+            y_e = np.linalg.norm(target_p - node[1:])
+            os.remove(fileName)
+
+            jacobian[0] = (y_e - y_g)/perturb
+
+            suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_g} -- compressRatio {compressL_g + perturb}"
+            cmd = cmd + suffix
+            BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            BASimProcess.communicate()
+            fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_g + perturb:.6f}_angleRight_{alpha_g:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
+            data1 = np.loadtxt(fileName)
+            idx = np.argmax(data1[:, 2])
+            node= data1[idx]
+            y_e = np.linalg.norm(target_p - node[1:])
+            os.remove(fileName)
+
+            jacobian[1] = (y_e - y_g)/perturb
+
+            if np.linalg.norm(jacobian) > 1e-2:
+                jacobian = jacobian/np.linalg.norm(jacobian) * 1e-2
+
+            step_size = 1
+            while True:
+                alpha_t = alpha_g - step_size * jacobian[0]
+                compressL_t = compressL_g - step_size * jacobian[1]
+
+                suffix = f" -- mu {mu_t} -- totalMass {rho_t} -- angleRight {alpha_t} -- compressRatio {compressL_t}"
+                cmd = cmd + suffix
+                BASimProcess = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                BASimProcess.communicate()
+                fileName = f"datafiles/simDiscreteNet_l2_0.010000_compressRatio_{compressL_t:.6f}_angleRight_{alpha_t:.6f}_mu_{mu_t:.6f}_mass_{rho_t:.6f}.txt"
+                data1 = np.loadtxt(fileName)
+                idx = np.argmax(data1[:, 2])
+                node= data1[idx]
+                y_e = np.linalg.norm(target_p - node[1:])
+                os.remove(fileName)
+                if y_e < y_g or step_size < 1e-3:
+                    break
+                step_size *= 0.5
+
+            alpha_g = alpha_g - step_size * jacobian[0]
+            compressL_g = compressL_g - step_size * jacobian[1]
+            y_g = y_e
+
+            print(alpha_g, compressL_g, y_g, step_size)
+            if step_size < 1e-3:
+                break
+            iter += 1
+        print("==============")
+        accuracy += y_g
+        cache_result.append([alpha_g, compressL_g, y_g])
+
+    elapsed_time = time.time() - start_time
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_memory = peak/(1024 ** 2)
+    results = {"accuracy": accuracy/len(test_samples), "memory_usage": peak_memory, "time_cost": elapsed_time/len(test_samples)}
+    print(results)
+
+    return results
