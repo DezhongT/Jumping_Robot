@@ -1,6 +1,6 @@
 # Inverse Design of Snap-Actuated Jumping Robots
 
-### [Paper](https://arxiv.org/pdf/2408.10470)
+### [Paper](https://arxiv.org/pdf/2408.10470) | [Video](https://github.com/DezhongT/Jumping_Robot/blob/resubmission/assets/jump_robot.mp4)
 
 ## Overview
 
