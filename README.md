@@ -116,14 +116,14 @@ This project involves an inverse design process for optimizing the parameters of
    - ```maxIter``` - Maximum iteration.
    - ```viscosity``` - Viscosity.
    - ```stiffness``` - Stiffness.
-   - ```dBar``` - ?
-   - ```scaleRendering``` - ?
+   - ```dBar``` - dBar
+   - ```scaleRendering``` - ScaleRendering.
    - ```angleRight``` - Angle mismatch.
    - ```gVector``` - Gravitational vector.
    - ```Possion``` - Possion ratio.
    - ```totalMass``` - Total mass.
    - ```mu``` - Frictional coefficient.
-   - ```epsilonV``` - ?
+   - ```epsilonV``` - epsilonV.
    - ```l1``` - Robot length.
    - ```l2``` - Robot height.
    - ```compressRatio``` - Pre-compression ratio.
