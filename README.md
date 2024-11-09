@@ -133,7 +133,7 @@ This project involves an inverse design process for optimizing the parameters of
    
    Using this simulation engine, we generate a trainable dataset `data/train_data.txt`, where each row represents simulation results of different trails in the following order: `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
      
-4. Train the neural network model with the jumping robot dataset for 200 epoch
+3. Train the neural network model with the jumping robot dataset for 200 epoch
    ```bash
    python3 src/train_model.py
    ```
@@ -145,7 +145,7 @@ This project involves an inverse design process for optimizing the parameters of
 
    The trained model will be saved to `output/checkpoints`.
 
-5. Use the pre-trained model to determine the robot parameters to achieve the desired jump
+4. Use the pre-trained model to determine the robot parameters to achieve the desired jump
    ```bash
    python3 src/inverse_design.py test_num:=3 plot:=True
    ```
