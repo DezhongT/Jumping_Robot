@@ -5,4 +5,4 @@ torch
 matplotlib 
 scikit-learn
 absl-py
-dragonfly-opt -v
+dragonfly-opt

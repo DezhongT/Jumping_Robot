@@ -1,7 +1,8 @@
+import sys
+import os
 import numpy as np
 import yaml
 from config import configer
-import os
 import logging
 from dataloader import dataset
 from torch.utils.data import Dataset, DataLoader
@@ -63,7 +64,7 @@ model = configer.build_model(args)
 create_output_dir()
 
 logging.info(f"Loading training data")
-data_path = "train_data.txt"
+data_path = "./data/train_data.txt"
 batch_size = 1024
 train_ratio = 0.8
 

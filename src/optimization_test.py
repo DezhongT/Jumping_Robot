@@ -31,7 +31,7 @@ class TestOptimizationFunction(absltest.TestCase):
         print(results)
 
 def load_testcases():
-    data = np.loadtxt("savedData.txt")
+    data = np.loadtxt("./data/opt_data.txt")
     x = np.linspace(0.14, 0.5, 10)
     y = np.linspace(0.3, 0.6, 10)
 

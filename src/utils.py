@@ -39,7 +39,7 @@ def loadModel(yaml_path = "model.yaml", checkpoint_path = "./output/checkpoints/
 global mean_alpha, std_alpha, mean_compressL, std_compressL, \
 mean_mu, std_mu, mean_rho, std_rho, mean_x, std_x, mean_y, std_y \
 
-def loadData(data_path = "train_data.txt"):
+def loadData(data_path = "./data/train_data.txt"):
     np_data = np.loadtxt(data_path)
     mean = np.mean(np_data, axis = 0)
     std = np.std(np_data, axis = 0)

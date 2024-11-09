@@ -38,7 +38,7 @@ class TestOptimizationFunction(absltest.TestCase):
             idx = np.argmax(data1[:, 2])
             base_node= data1[idx]
             base_node = base_node[1:]
-            # os.remove(fileName)
+            os.remove(fileName)
 
             print(base_node)
             results = {}
@@ -75,7 +75,7 @@ class TestOptimizationFunction(absltest.TestCase):
             idx = np.argmax(data1[:, 2])
             base_node= data1[idx]
             base_node = base_node[1:]
-            # os.remove(fileName)
+            os.remove(fileName)
 
             results = {}
             for epsilon in epsilon_tests:
@@ -111,7 +111,7 @@ class TestOptimizationFunction(absltest.TestCase):
             idx = np.argmax(data1[:, 2])
             base_node= data1[idx]
             base_node = base_node[1:]
-            # os.remove(fileName)
+            os.remove(fileName)
 
             results = {}
             for mu in mu_tests:
@@ -148,7 +148,7 @@ class TestOptimizationFunction(absltest.TestCase):
             idx = np.argmax(data1[:, 2])
             base_node= data1[idx]
             base_node = base_node[1:]
-            # os.remove(fileName)
+            os.remove(fileName)
 
             results = {}
             for bar_mass in bar_mass_tests:

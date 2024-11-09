@@ -118,6 +118,8 @@ def main():
             plt.title(rf"$\mu$ = {mu_rand:.2g}, $\rho$= {rho_rand:.2g}, $\delta \alpha$ = {alpha:.2g}, $\eta$ = {1-compressL:.2g}")
             plt.axis('equal')
             plt.show()
+        
+        os.remove(fileName)
 
     Data = np.asarray(Data)
     print(f"The average error of the inverse design is {np.mean(Data)}, and standard deviation is {np.std(Data)}")

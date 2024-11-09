@@ -127,13 +127,13 @@ This project involves an inverse design process for optimizing the parameters of
    - ```compressRatio``` - Pre-compression ratio.
    - ```h1``` - Height at the critical configuration before the snap.
 
-   The robot trajectory data will be saved to `datafiles/` directory, with each column in the file corresponding to `time`, `x`, `y`.
+   The simulation data of robot trajectory will be saved to `datafiles/` directory, with each column in the file corresponding to `time`, `x`, `y`.
    
-   Using this simulation engine, we generate a trainable dataset `train_data.txt`, where each row represents simulation results of different trails in the following order: `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
+   Using this simulation engine, we generate a trainable dataset `data/train_data.txt`, where each row represents simulation results of different trails in the following order: `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
      
 4. Train the neural network model with the jumping robot dataset for 200 epoch
    ```bash
-   python3 train_model.py
+   python3 src/train_model.py
    ```
   The loss curve are evaluated over training and test data:
 
@@ -145,10 +145,10 @@ This project involves an inverse design process for optimizing the parameters of
 
 5. Use the pre-trained model to determine the robot parameters to achieve the desired jump
    ```bash
-   python3 inverse_design.py test_num:=100 plot:=True
+   python3 src/inverse_design.py test_num:=3 plot:=True
    ```
    Arguments:
-   - ```test_num```: Number of trails to run (e.g., `100`).
+   - ```test_num```: Number of trails to run (e.g., `10`).
    - ```plot```: Flag to plot results (`True` or `False`).
 
    The average error and standard deviation over multiple trials are evaluated:
@@ -166,7 +166,7 @@ This project involves an inverse design process for optimizing the parameters of
 
 5. (Supplementary) Perform the sensitivity analysis on the impact of imperfections in the design parameters, including `delta_alpha`, `epsilon`, `mu`, and `mass`.
    ```bash
-   python3 imperfection_test.py --parameter 'delta_alpha'
+   python3 src/imperfection_test.py --parameter 'delta_alpha'
    ```
    Arguments:
    - ```parameter```: design parameter to be evaluated (e.g., `delta_alpha`, `epsilon`, `mu`, `mass`).
@@ -180,12 +180,12 @@ This project involves an inverse design process for optimizing the parameters of
 
 6. (Supplementary) Perform the optimization method test, including `data-driven`, `bayesian-opt`, and `gradient-descent`.
    ```bash
-   python3 optimization_test.py --test_type data-driven
+   python3 src/optimization_test.py --test_type data-driven
    ```
    Arguments:
    - ```test_type```: optimization method to be evaluated (e.g., `data-driven`, `bayesian-opt`, `gradient-descent`).
 
-   The computation speed and cost of different optimization methods are evaluated (see in the paper).
+   The computation speed and cost of different optimization methods are evaluated (see details in the paper).
 
 ### Citation
 If our work has helped your research, please cite the following paper.
