@@ -22,7 +22,7 @@ This project involves an inverse design process for optimizing the parameters of
    cd Jumping_Robot
    ```
 
-2. Create enviroment 
+2. Create environment 
    ```bash
    conda create -n jumpingrobot python=3.10
    conda activate jumpingrobot
@@ -144,19 +144,7 @@ This project involves an inverse design process for optimizing the parameters of
    - ```test_num```: Number of trails to run (e.g., `100`).
    - ```plot```: Flag to plot results (`True` or `False`).
 
-   The average error and standard deviation over multiple trails are evaluated:
-
-   <div align="center">
-   <img src="assets/inverse_case1.png" alt="Case 1">
-   </div>
-
-   <div align="center">
-   <img src="assets/inverse_case2.png" alt="Case 2">
-   </div>
-
-   <div align="center">
-   <img src="assets/inverse_case3.png" alt="Case 3">
-   </div>
+   The average error and standard deviation over multiple trials are evaluated:
 
   <table>
     <tr>
@@ -176,7 +164,7 @@ This project involves an inverse design process for optimizing the parameters of
    Arguments:
    - ```parameter```: design parameter to be evaluated (e.g., `delta_alpha`, `epsilon`, `mu`, `mass`).
 
-   The relative error on x and y axes are evaluated:
+   The relative error on the x and y axes are evaluated:
    <div align="center">
    <img src="assets/imperfection_test.png" alt="Imperfection test">
    </div>
