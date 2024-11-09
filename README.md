@@ -128,15 +128,16 @@ This project involves an inverse design process for optimizing the parameters of
    - ```h1``` - Height at the critical configuration before the snap.
 
    The robot trajectory data will be saved to `datafiles/` directory, with each column in the file corresponding to `time`, `x`, `y`.
+   
    Using this simulation engine, we generate a trainable dataset `train_data.txt`, where each row represents simulation results of different trails in the following order: `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
      
-3. Train the neural network model with the jumping robot dataset for 200 epoch
+4. Train the neural network model with the jumping robot dataset for 200 epoch
    ```bash
    python3 train_model.py
    ```
    The trained model will be saved to `output/checkpoints`
 
-4. Use the pre-trained model to determine the robot parameters to achieve the desired jump
+5. Use the pre-trained model to determine the robot parameters to achieve the desired jump
    ```bash
    python3 inverse_design.py test_num:=100 plot:=True
    ```
