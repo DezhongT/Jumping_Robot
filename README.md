@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project involves an inverse design process for optimizing parameters of a jumping robot to achieve specific target trajectories. The script `inverse_design.py` uses a trained model to predict trajectory and optimize design parameters through simulations.
+This project involves an inverse design process for optimizing the parameters of a jumping robot to achieve specific target trajectories. The script `inverse_design.py` uses a trained model to predict the trajectory and optimize design parameters through simulations.
 
 <div align="center">
   <img src="assets/demo.gif" alt="Jumping robot">
@@ -82,7 +82,7 @@ This project involves an inverse design process for optimizing parameters of a j
   - Simply install through apt package manager:
     - **Ubuntu**: `sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev`
 
-- (Lapack)[https://www.netlib.org/lapack/] (*included in MKL*)
+- [Lapack](https://www.netlib.org/lapack/) (*included in MKL*)
 
 
 ## Usage
@@ -96,7 +96,7 @@ This project involves an inverse design process for optimizing parameters of a j
    cd ../..
    ```
 
-2. (Optional) To simulate the jumping robot with customized setting parameters, simply run
+2. (Optional) To simulate the jumping robot with customized setting parameters, run
    ```bash
    ./simulations/simDER ./simulations/option.txt
    ```
@@ -128,7 +128,7 @@ This project involves an inverse design process for optimizing parameters of a j
    - ```h1``` - Height at the critical configuration before the snap.
 
    The robot trajectory data will be saved to `datafiles/` directory, with each column in the file corresponding to `time`, `x`, `y`.
-   We generate a trainable dataset `train_data.txt`, using this simulation engine, where each row represents simulation results of different trails, in the following order of `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
+   Using this simulation engine, we generate a trainable dataset `train_data.txt`, where each row represents simulation results of different trails in the following order: `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
      
 3. Train the neural network model with the jumping robot dataset for 200 epoch
    ```bash
@@ -157,6 +157,15 @@ This project involves an inverse design process for optimizing parameters of a j
    <div align="center">
    <img src="assets/inverse_case3.png" alt="Case 3">
    </div>
+
+  <table>
+    <tr>
+      <td align="center"><img src="assets/inverse_case1.png" alt="Case 1"></td>
+      <td align="center"><img src="assets/inverse_case2.png" alt="Case 2"></td>
+      <td align="center"><img src="assets/inverse_case3.png" alt="Case 3"></td>
+    </tr>
+  </table>
+
 
    `The average error of the inverse design is 0.0009793610214405052, and standard deviation is 0.00023094667367617823`
 
