@@ -167,7 +167,7 @@ This project involves an inverse design process for optimizing the parameters of
 
    The relative error on the x and y axes are evaluated:
   <div align="center">
-    <img src="assets/imperfection_test.png" alt="Imperfection test" width="400" height="300">
+    <img src="assets/imperfection_test.png" alt="Imperfection test" width="500" height="500">
   </div>
 
    
