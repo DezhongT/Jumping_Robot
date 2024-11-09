@@ -1,4 +1,6 @@
-# Jumping Robot Inverse Design
+# Inverse Design of Snap-Actuated Jumping Robots
+
+[Paper](https://arxiv.org/pdf/2408.10470)
 
 ## Overview
 
