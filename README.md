@@ -137,6 +137,7 @@ This project involves an inverse design process for optimizing the parameters of
    ```bash
    python3 src/train_model.py
    ```
+
   The loss curve are evaluated over training and test data:
 
   <div align="center">
@@ -162,7 +163,6 @@ This project involves an inverse design process for optimizing the parameters of
       <td align="center"><img src="assets/inverse_case3.png" alt="Case 3"></td>
     </tr>
   </table>
-
 
    `The average error of the inverse design is 0.0009793610214405052, and standard deviation is 0.00023094667367617823`
 
