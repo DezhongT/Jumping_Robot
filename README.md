@@ -137,7 +137,7 @@ This project involves an inverse design process for optimizing the parameters of
    ```
 
   <div align="center">
-    <img src="assets/imperfection_test.png" alt="Train result" width="320" height="240">
+    <img src="assets/train_result.png" alt="Train result" width="480" height="360">
   </div>
    The trained model will be saved to `output/checkpoints`.
 
