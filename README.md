@@ -135,10 +135,12 @@ This project involves an inverse design process for optimizing the parameters of
    ```bash
    python3 train_model.py
    ```
+  The loss curve are evaluated over training and test data:
 
   <div align="center">
     <img src="assets/train_result.png" alt="Train result" width="480" height="360">
   </div>
+
    The trained model will be saved to `output/checkpoints`.
 
 5. Use the pre-trained model to determine the robot parameters to achieve the desired jump
