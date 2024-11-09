@@ -135,7 +135,11 @@ This project involves an inverse design process for optimizing the parameters of
    ```bash
    python3 train_model.py
    ```
-   The trained model will be saved to `output/checkpoints`
+
+  <div align="center">
+    <img src="assets/imperfection_test.png" alt="Train result" width="320" height="240">
+  </div>
+   The trained model will be saved to `output/checkpoints`.
 
 5. Use the pre-trained model to determine the robot parameters to achieve the desired jump
    ```bash
