@@ -1,6 +1,8 @@
 essentials
 numpy
-pyymal 
+pyyaml 
 torch 
 matplotlib 
 scikit-learn
+absl-py
+dragonfly-opt -v

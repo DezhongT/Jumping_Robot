@@ -6,7 +6,6 @@ import utils
 import matplotlib.pyplot as plt
 
 
-
 def parse_custom_arguments():
     parser = argparse.ArgumentParser(description="Process custom key-value arguments.")
     parser.add_argument('--test_type', choices=['data-driven', 'bayesian-opt', 'gradient-descent'],

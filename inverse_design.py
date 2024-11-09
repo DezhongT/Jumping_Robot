@@ -97,7 +97,6 @@ def main():
         inputs = [alpha_int, compressL_int, mu_rand, rho_rand]
         alpha, compressL, mu, rho = inverseOptimize(inputs, model, target_p.copy())
 
-
         cmd = './simulations/simDER ./simulations/option.txt'
         suffix = f" -- mu {mu} -- totalMass {rho} -- angleRight {alpha} -- compressRatio {compressL}"
         cmd = cmd + suffix

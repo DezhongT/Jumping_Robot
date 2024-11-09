@@ -10,9 +10,8 @@ This project involves an inverse design process for optimizing parameters of a j
 
 ## Prerequisites
 
-- Ubuntu 18.04 or above
-- Python 3.x
-- Python libraries (install via `requirements.txt`)
+- [Ubuntu 18.04 or above](https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview)
+- Python3 and dependencies
 - C++ dependencies
 
 ## Installation
@@ -23,14 +22,20 @@ This project involves an inverse design process for optimizing parameters of a j
    cd Jumping_Robot
    ```
 
-2. Install python libraries:
+2. Create enviroment 
    ```bash
+   conda create -n jumpingrobot python=3.10
+   conda activate jumpingrobot
+   ```
+
+3. Install Python dependencies
+   ```base
    pip install -r requirements.txt
    ```
    
-3. Install C++ dependencies
+4. Install C++ dependencies
 
-   - **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
+- **Note**: Some of these packages are installed to the system library for convenience. You may want to install locally to e.g., `~/.local` to avoid conflicts with system libraries. Add the `cmake` flag: `-D CMAKE_INSTALL_PREFIX=~/.local`. Then `sudo` is not required to install. You'll need to ensure subsequent builds know where to find the build libraries.
 
 - [Eigen 3.4.0](http://eigen.tuxfamily.org/index.php?title=Main_Page)
   - Eigen is used for various linear algebra operations.
@@ -77,7 +82,7 @@ This project involves an inverse design process for optimizing parameters of a j
   - Simply install through apt package manager:
     - **Ubuntu**: `sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev`
 
-- Lapack (*included in MKL*)
+- (Lapack)[https://www.netlib.org/lapack/] (*included in MKL*)
 
 
 ## Usage
@@ -95,7 +100,7 @@ This project involves an inverse design process for optimizing parameters of a j
    ```bash
    ./simulations/simDER ./simulations/option.txt
    ```
-   The parameters are specified in the ```option.txt``` with specifications as follows (we use SI units):
+   The parameters are specified in the ```option.txt``` with specifications as follows (SI units):
    - ```render (0 or 1) ```- Flag indicating whether OpenGL visualization should be rendered.
    - ```saveData (0 or 1)``` - Flag indicating whether positions should be recorded.
    - ```YoungM``` - Young's modulus.
@@ -121,24 +126,70 @@ This project involves an inverse design process for optimizing parameters of a j
    - ```l2``` - Robot height.
    - ```compressRatio``` - Pre-compression ratio.
    - ```h1``` - Height at the critical configuration before the snap.
+
+   The robot trajectory data will be saved to `datafiles/` directory, with each column in the file corresponding to `time`, `x`, `y`.
+   We generate a trainable dataset `train_data.txt`, using this simulation engine, where each row represents simulation results of different trails, in the following order of `alpha`, `compressL`, `mu`, `H`, `rho`, `L2`, `ymax`, `x_at_ymax`.
      
-3. Train the neural network model with the jumping robot dataset
+3. Train the neural network model with the jumping robot dataset for 200 epoch
    ```bash
    python3 train_model.py
    ```
+   The trained model will be saved to `output/checkpoints`
 
 4. Use the pre-trained model to determine the robot parameters to achieve the desired jump
    ```bash
    python3 inverse_design.py test_num:=100 plot:=True
    ```
    Arguments:
-   - ```test_num```: Number of tests to run (e.g., `10`).
+   - ```test_num```: Number of trails to run (e.g., `100`).
    - ```plot```: Flag to plot results (`True` or `False`).
+
+   The average error and standard deviation over multiple trails are evaluated:
+
+   <div align="center">
+   <img src="assets/inverse_case1.png" alt="Case 1">
+   </div>
+
+   <div align="center">
+   <img src="assets/inverse_case2.png" alt="Case 2">
+   </div>
+
+   <div align="center">
+   <img src="assets/inverse_case3.png" alt="Case 3">
+   </div>
+
+   `The average error of the inverse design is 0.0009793610214405052, and standard deviation is 0.00023094667367617823`
+
+5. (Supplementary) Perform the sensitivity analysis on the impact of imperfections in the design parameters, including `delta_alpha`, `epsilon`, `mu`, and `mass`.
+   ```bash
+   python3 imperfection_test.py --parameter 'delta_alpha'
+   ```
+   Arguments:
+   - ```parameter```: design parameter to be evaluated (e.g., `delta_alpha`, `epsilon`, `mu`, `mass`).
+
+   The relative error on x and y axes are evaluated:
+   <div align="center">
+   <img src="assets/imperfection_test.png" alt="Imperfection test">
+   </div>
+   
+
+6. (Supplementary) Perform the optimization method test, including `data-driven`, `bayesian-opt`, and `gradient-descent`.
+   ```bash
+   python3 optimization_test.py --test_type data-driven
+   ```
+   Arguments:
+   - ```test_type```: optimization method to be evaluated (e.g., `data-driven`, `bayesian-opt`, `gradient-descent`).
+
+   The computation speed and cost of different optimization methods are evaluated (see in the paper).
 
 ### Citation
 If our work has helped your research, please cite the following paper.
 ```
-@article{
+@article{tong2024inverse,
+  title={Inverse Design of Snap-Actuated Jumping Robots Powered by Mechanics-Aided Machine Learning},
+  author={Tong, Dezhong and Hao, Zhuonan and Liu, Mingchao and Huang, Weicheng},
+  journal={arXiv preprint arXiv:2408.10470},
+  year={2024}
 }
 
 ```
