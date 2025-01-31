@@ -191,8 +191,9 @@ If our work has helped your research, please cite the following paper.
 @article{tong2024inverse,
   title={Inverse Design of Snap-Actuated Jumping Robots Powered by Mechanics-Aided Machine Learning},
   author={Tong, Dezhong and Hao, Zhuonan and Liu, Mingchao and Huang, Weicheng},
-  journal={arXiv preprint arXiv:2408.10470},
-  year={2024}
+  journal={IEEE Robotics and Automation Letters},
+  year={2024},
+  publisher={IEEE}
 }
 
 ```
